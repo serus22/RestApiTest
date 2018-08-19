@@ -1,0 +1,31 @@
+{
+
+    "flow.pathToFlow": "${workspaceRoot}/node_modules/.bin/flow",
+    "javascript.validate.enable": false,
+    "flow.useNPMPackagedFlow": true,
+    "flow.enabled": true,
+  
+    "eslint.nodePath": "${workspaceRoot}/node_modules/eslint",
+    "eslint.alwaysShowStatus": true,
+  
+    "editor.detectIndentation": false,
+    "editor.fontSize": 12,
+    "editor.tabSize": 2,
+  
+    "files.defaultLanguage": "javascriptreact",
+    "files.associations": {
+      "*.js": "javascriptreact"
+    },
+    "editor.rulers": [80],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "node_modules": true,
+      ".circleci": true,
+      ".vscode": true,
+      "build": true
+    }
+  }
+  
