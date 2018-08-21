@@ -4,23 +4,25 @@ import * as React from 'react';
 import { observe } from 'mobx';
 
 import ApiStore from './Store';
-import type { ApiResult, Endpoint } from './Store';
+import type { ApiResult, Endpoint } from './index';
 
 // -----------------------------------------------------------------------------
 
-export type Results = {
+export type QueryDefinition = [string, {}];
+
+export type ApiResults = {
   [string]: ApiResult
 };
 
 type QueryState = {|
   endpoints: { [string]: any },
-  results: Results,
+  results: ApiResults,
   loading: boolean
 |};
 
 export type QueryProps = {|
-  children: (Results, boolean) => React.Node,
-  queries: { [string]: [string, {}] },
+  children: (ApiResults, boolean) => React.Node,
+  queries: { [string]: QueryDefinition },
   endpoints: { [string]: Endpoint },
   store: ApiStore
 |};
@@ -32,7 +34,7 @@ const InitialState: QueryState = {
 };
 
 // -----------------------------------------------------------------------------
-export default class Query extends React.Component<QueryProps, QueryState> {
+export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
   mounted: boolean;
   disposer: any;
@@ -67,7 +69,7 @@ export default class Query extends React.Component<QueryProps, QueryState> {
       const template = props.endpoints[props.queries[key][0]];
 
       if (! template || typeof template !== 'function') {
-        throw new Error('Invalid enpoint name');
+        throw new Error('Invalid enpoint name "' + props.queries[key][0] + '"');
       }
 
       const query = template(props.queries[key][1]);
@@ -86,7 +88,7 @@ export default class Query extends React.Component<QueryProps, QueryState> {
       return null;
     }
 
-    const results: Results = Object.keys(endpoints).reduce((obj, key) => {
+    const results: ApiResults = Object.keys(endpoints).reduce((obj, key) => {
       obj[key] = props.store.get(endpoints[key]);
       return obj;
     }, {});

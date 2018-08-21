@@ -5,10 +5,10 @@ import * as React from 'react';
 import Query from './Query';
 import { Consumer } from './ApiProvider';
 
-import type { Results } from './Query';
+import type { ApiResults } from './index';
 
 type ApiQueryProps = {|
-  children: (Results, boolean) => React.Node,
+  children: (ApiResults, boolean) => React.Node,
   queries: { [string]: [string, {}] }
 |};
 

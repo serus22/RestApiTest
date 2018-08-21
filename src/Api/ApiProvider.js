@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import MobxApiStore from './Store';
-import defaultFetch from './defaultFetch';
+import defaultFetch from './examples/defaultFetch';
 
 import type { Endpoint } from './Store';
 
