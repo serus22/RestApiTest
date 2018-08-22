@@ -92,7 +92,6 @@ class ApiStore {
 
   getCached(endpoint): null | ApiResult {
     const id = this.getId(endpoint);
-    console.log(id);
     return this.cache[id] || null;
   }
 

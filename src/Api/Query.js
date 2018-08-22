@@ -24,7 +24,7 @@ export type QueryProps = {|
   children: (ApiResults, boolean) => React.Node,
   onUpdate?: (ApiResults, boolean) => void,
   queries: { [string]: QueryDefinition },
-  endpoints: { [string]: Endpoint },
+  endpoints: { [string]: any => Endpoint },
   store: ApiStore
 |};
 
@@ -35,6 +35,7 @@ const InitialState: QueryState = {
 };
 
 // -----------------------------------------------------------------------------
+
 export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
   mounted: boolean;
@@ -66,7 +67,8 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
   ): null | $Shape<QueryState> {
 
     let update = false;
-    const endpoints = Object.keys(props.queries).reduce((obj, key) => {
+    const queryIds = Object.keys(props.queries);
+    const endpoints = queryIds.reduce((obj, key) => {
       const template = props.endpoints[props.queries[key][0]];
 
       if (! template || typeof template !== 'function') {
@@ -76,7 +78,7 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
       const query = template(props.queries[key][1]);
 
       if (! prevState.endpoints[key]
-        || (prevState.endpoints[key] && prevState.endpoints[key].url !== query.url)) {
+        || (prevState.endpoints[key] && prevState.endpoints[key].url !== query.url)) { // TODO: use ID instead url for example because of POST, PATCH could have same url
         obj[key] = query;
         update = true;
       } else {
@@ -85,7 +87,7 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
       return obj;
     }, {});
 
-    if (! update) {
+    if (! update && queryIds.length === Object.keys(prevState.endpoints).length) {
       return null;
     }
 
@@ -153,10 +155,12 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
   // ---------------------------------------------------------------------------
 
-  componentDidUpdate (): void {
-    this.props.onUpdate && this.props.onUpdate(
-      this.state.results,
-      this.state.loading
-    );
+  componentDidUpdate (prevProps: QueryProps, prevState: QueryState): void {
+    // if (this.state.loading !== prevState.loading) {
+      this.props.onUpdate && this.props.onUpdate(
+        this.state.results,
+        this.state.loading
+      );
+    // }
   }
 }

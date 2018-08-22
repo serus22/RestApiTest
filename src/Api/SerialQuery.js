@@ -10,15 +10,16 @@ import type { QueryDefinition, ApiResult, Endpoint, ApiResults } from './index';
 // -----------------------------------------------------------------------------
 
 export type SerialQueryProps = {|
+  endpoints: { [string]: any => Endpoint },
   mergeResolver: (?any, ?any) => any,
   children: ApiResult => React.Node,
-  endpoints: { [string]: Endpoint },
   queries: Array<QueryDefinition>,
   onUpdate?: ApiResult => void,
   store: ApiStore
 |};
 
 type SerialQueryState = {|
+  queries: { [string]: QueryDefinition },
   stack: Array<QueryDefinition>,
   index: number
 |};
@@ -31,6 +32,7 @@ export default class SerialQuery extends React.PureComponent<
 > {
 
   state = {
+    queries: {},
     stack: [],
     index: 0
   };
@@ -42,14 +44,23 @@ export default class SerialQuery extends React.PureComponent<
     state: SerialQueryState
   ): null | $Shape<SerialQueryState> {
 
+
     if (props.queries !== state.stack) {
+      let index = SerialQuery.findFirstUnresolved(props);
       return {
+        queries: index > -1
+          ? props.queries
+            .slice(0, index + 1)
+            .reduce((prev, it, key) => ({ ...prev, [key]: it }), {})
+          : {},
         stack: props.queries,
-        index: SerialQuery.findFirstUnresolved(props)
+        index
       };
     }
     return null;
   }
+
+  // ---------------------------------------------------------------------------
 
   static findFirstUnresolved = (props: SerialQueryProps): number => {
 
@@ -57,22 +68,19 @@ export default class SerialQuery extends React.PureComponent<
       return 0;
     }
 
-    let index = 0;
+    let index = -1;
+    let i = null;
+    let q;
 
-    console.log(props.queries[index]);
-
-    let i = props.store.getCached(props.queries[index]);
-
-    while (i && i.loading === false && index <= props.queries.length) {
-      console.log(i);
+    do {
+      q = props.queries[index + 1];
+      if (! q) {
+        break;
+      }
+      let endpoint = props.endpoints[q[0]](q[1]);
+      i = props.store.getCached(endpoint);
       index++;
-      i = props.store.getCached(props.queries[index]);
-    }
-
-    console.log(i);
-
-    console.log(index);
-
+    } while (index < props.queries.length && i && i.loading === false);
     return index;
   }
 
@@ -102,12 +110,21 @@ export default class SerialQuery extends React.PureComponent<
   // ---------------------------------------------------------------------------
 
   onUpdate = (results: ApiResults, loading: boolean): void => {
+
     const { stack, index } = this.state;
     const { onUpdate } = this.props;
 
     const update = new Promise(resolve => {
-      if (results[index + ''] && results[index + ''].loading === false) {
-        this.setState({ index: index + 1 }, resolve);
+
+      let i = SerialQuery.findFirstUnresolved(this.props);
+
+      if (results[index + ''] && results[index + ''].loading === false && i !== this.state.index) {
+        this.setState({
+          index: i,
+          queries: this.props.queries
+            .slice(0, i + 1)
+            .reduce((prev, it, key) => ({ ...prev, [key]: it }), {}),
+          }, resolve);
       } else {
         resolve();
       }
@@ -125,25 +142,27 @@ export default class SerialQuery extends React.PureComponent<
 
   render (): React.Node {
 
-    const { stack, index } = this.state;
+    const { stack, index, queries } = this.state;
     const { children, store, endpoints } = this.props;
-
-    const queries: { [string]: QueryDefinition } = stack
-      .filter((_, k) => k <= index)
-      .reduce((prev, it, key) => ({ ...prev, [key]: it }), {});
 
     return <Query
       onUpdate={this.onUpdate}
-      queries={queries}
       endpoints={endpoints}
+      queries={queries}
       store={store}
     >
       {(results, loading) => {
         return children({
-          loading: loading || index < stack.length -1,
+          loading: loading || index < stack.length - 1,
           data: this.mergeResults(results)
         });
       }}
     </Query>;
+  }
+
+  // ---------------------------------------------------------------------------
+
+  componentDidUpdate (): void {
+    console.log(this.state.index);
   }
 }
