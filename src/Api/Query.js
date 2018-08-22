@@ -15,7 +15,7 @@ export type ApiResults = {
 };
 
 type QueryState = {|
-  endpoints: { [string]: any },
+  endpoints: { [string]: any => Endpoint },
   results: ApiResults,
   loading: boolean
 |};

@@ -25,6 +25,15 @@ export default {
     url: API + '/users/' + props.id + '?delay=1'
   }),
 
+  'user.putUsername': (props: { id: string, name: string }) => ({
+    url: API + '/users/' + props.id,
+    method: 'PUT',
+    body: {
+      name: props.name
+    },
+    ttl: -1
+  }),
+
   'resource.getList': () => ({
     url: API + '/unknown'
   }),

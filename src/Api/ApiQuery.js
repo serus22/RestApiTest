@@ -7,11 +7,15 @@ import { Consumer } from './ApiProvider';
 
 import type { ApiResults, QueryDefinition } from './index';
 
+// -----------------------------------------------------------------------------
+
 type ApiQueryProps = {|
   children: (ApiResults, boolean) => React.Node,
   onUpdate?: (ApiResults, boolean) => void,
   queries: { [string]: QueryDefinition }
 |};
+
+// -----------------------------------------------------------------------------
 
 export default class ApiQuery extends React.PureComponent<ApiQueryProps> {
 
@@ -21,6 +25,6 @@ export default class ApiQuery extends React.PureComponent<ApiQueryProps> {
         endpoints={endpoints}
         store={store}
         {...this.props} />}
-    </Consumer>
+    </Consumer>;
   }
 }

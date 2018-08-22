@@ -4,21 +4,27 @@ import * as React from 'react';
 import DevTools from 'mobx-react-devtools';
 
 import Pre from './Pre';
-import ApiProvider, { defaultApiContext, ApiQuery, ApiSerialQuery } from './Api';
-
+import ExampleForm from './ExampleForm';
 import endpoints from './Api/examples/endpoints';
+import ApiProvider, {
+  defaultApiContext,
+  ApiSerialQuery,
+  ApiQuery
+} from './Api';
 
 import './App.css';
 import reactLogo from './logo.svg';
 import mobxLogo from './mobx.svg';
+
+// -----------------------------------------------------------------------------
 
 type AppState = {|
   perPage: number,
   page: number
 |};
 
-
 // -----------------------------------------------------------------------------
+
 class App extends React.Component<*, AppState> {
 
   state = {
@@ -64,6 +70,8 @@ class App extends React.Component<*, AppState> {
     </center>;
   }
 
+  // ---------------------------------------------------------------------------
+
   static mergeUserDetails (prev: ?Object, next: ?Object): Array<Object> {
     return [...(prev || []), ...(next ? [next.data] : [])];
   }
@@ -104,6 +112,9 @@ class App extends React.Component<*, AppState> {
                     {result => loading ? 'loading...' : <Pre value={result} loading={result.loading} />}
                   </ApiSerialQuery>}
               </div>
+              {users.data && <div className='col col-sm-6'>
+                <ExampleForm user={users.data.list[0]} />
+              </div>}
             </div>
 
           </div>}
