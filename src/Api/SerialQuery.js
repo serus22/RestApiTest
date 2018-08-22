@@ -159,10 +159,4 @@ export default class SerialQuery extends React.PureComponent<
       }}
     </Query>;
   }
-
-  // ---------------------------------------------------------------------------
-
-  componentDidUpdate (): void {
-    console.log(this.state.index);
-  }
 }
