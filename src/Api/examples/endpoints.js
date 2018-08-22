@@ -22,7 +22,7 @@ export default {
   }),
 
   'user.getSingle': (props: { id: string | number }) => ({
-    url: API + '/users/' + props.id
+    url: API + '/users/' + props.id + '?delay=1'
   }),
 
   'resource.getList': () => ({
@@ -30,7 +30,7 @@ export default {
   }),
 
   'resource.getSingle': (props: { id: string | number }) => ({
-    url: API + '/unknown/' + props.id
+    url: API + '/unknown/' + props.id + '?delay=3'
   }),
 
 };

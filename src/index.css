@@ -11,8 +11,8 @@ body {
 pre {
   font-size: 12px;
   font-family: 'Courier New', Courier, monospace;
-  color: #999;
+  color: #333;
   padding: 20px;
-  background: #fdfdfd;
+  background: #eee;
   border-radius: 10px;
 }

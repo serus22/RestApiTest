@@ -38,13 +38,17 @@ class ApiStore {
     this.fetchAction = fetchAction;
   }
 
+  getId (endpoint: any): string {
+    return endpoint.url + (endpoint.uid || '');
+  }
+
   // ---------------------------------------------------------------------------
 
   get = (endpoint: any): ApiResult => {
     // unique request id
-    const id = endpoint.url + (endpoint.uid || '');
+    const id = this.getId(endpoint);
     // tmp
-    const cached = this.cache[id];
+    const cached = this.getCached(endpoint);
     // return cached
     if (cached &&
       (cached.loading || cached.ttl === 0 || (cached.ttl || 0) > Date.now())) {
@@ -86,6 +90,14 @@ class ApiStore {
 
   // ---------------------------------------------------------------------------
 
+  getCached(endpoint): null | ApiResult {
+    const id = this.getId(endpoint);
+    console.log(id);
+    return this.cache[id] || null;
+  }
+
+  // ---------------------------------------------------------------------------
+
   update = (cb: (cache: ApiCache) => ApiCache): void => {
     let update = cb(this.cache);
 
@@ -98,7 +110,7 @@ class ApiStore {
 const MobxApiStore = decorate(ApiStore, {
   cache: observable,
   update: action,
-  get: action,
+  get: action
 });
 
 export default MobxApiStore;

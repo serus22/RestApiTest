@@ -22,15 +22,16 @@ type QueryState = {|
 
 export type QueryProps = {|
   children: (ApiResults, boolean) => React.Node,
+  onUpdate?: (ApiResults, boolean) => void,
   queries: { [string]: QueryDefinition },
   endpoints: { [string]: Endpoint },
   store: ApiStore
 |};
 
 const InitialState: QueryState = {
+  loading: false,
   endpoints: {},
-  results: {},
-  loading: false
+  results: {}
 };
 
 // -----------------------------------------------------------------------------
@@ -139,6 +140,7 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
   }
 
   // ---------------------------------------------------------------------------
+
   render (): React.Node {
 
     const { results, loading } = this.state;
@@ -146,6 +148,15 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
     return this.props.children(
       results,
       loading
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+
+  componentDidUpdate (): void {
+    this.props.onUpdate && this.props.onUpdate(
+      this.state.results,
+      this.state.loading
     );
   }
 }
