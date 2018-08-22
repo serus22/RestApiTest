@@ -26,6 +26,5 @@
 }
 
 pre.loading {
-  border: 1px solid rgb(14, 214, 14);
-  margin: -1px;
+  box-shadow: 0 0 5px rgb(14, 214, 14);
 }
