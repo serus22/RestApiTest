@@ -4,16 +4,16 @@ import * as React from 'react';
 
 import MobxApiStore from './Store';
 
-import type { Endpoint, ApiResult } from './index';
+import type { Endpoint, ApiResult, ApiCache } from './index';
 
 // -----------------------------------------------------------------------------
 
 export type ApiAction = (props: any) => Promise<ApiResult>;
 
 export type MutationProps = {|
+  update?: (ApiResult, storeApi: { searchQuery: string => null | ApiCache }) => null | ApiCache,
   children: (ApiAction, null | ApiResult) => React.Node,
   endpoints: { [string]: any => Endpoint },
-  onSuccess?: () => void,
   store: MobxApiStore,
   query: string
 |};
@@ -22,7 +22,7 @@ export type MutationProps = {|
 type MutationState = {|
   result: null | ApiResult,
   called: null | string,
-|}
+|};
 
 // -----------------------------------------------------------------------------
 
@@ -44,9 +44,25 @@ export default class Mutation extends React.PureComponent<
     result: null
   };
 
-  action = (): Promise<ApiResult> => {
+  action = (data: any): Promise<ApiResult> => {
     return new Promise(resolve => {
+      const update = this.props.update;
+      if (update) {
+        const changes = update(
+          {
+            query: [this.props.query, null],
+            loading: false,
+            data
+          },
+          {
+            searchQuery: this.props.store.searchQuery.bind(this.props.store)
+          }
+        );
 
+        if (changes && Object.keys(changes).length > 0) {
+          this.props.store.update(changes); // TODO: Diff needs to be applied smartly (new instance required now)
+        }
+      }
     });
   };
 

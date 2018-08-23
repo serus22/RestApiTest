@@ -133,7 +133,8 @@ export default class SerialQuery extends React.PureComponent<
     update.then(_ => {
       onUpdate && onUpdate({
         loading: loading || index < stack.length -1,
-        data: this.mergeResults(results)
+        data: this.mergeResults(results),
+        query: ['SerialQuery', null]
       });
     })
   };
@@ -154,7 +155,8 @@ export default class SerialQuery extends React.PureComponent<
       {(results, loading) => {
         return children({
           loading: loading || index < stack.length - 1,
-          data: this.mergeResults(results)
+          data: this.mergeResults(results),
+          query: ['SerialQuery', null]
         });
       }}
     </Query>;

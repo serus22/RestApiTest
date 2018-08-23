@@ -8,7 +8,7 @@ import type { ApiResult, Endpoint } from './index';
 
 // -----------------------------------------------------------------------------
 
-export type QueryDefinition = [string, {}];
+export type QueryDefinition = [string, any];
 
 export type ApiResults = {
   [string]: ApiResult
@@ -92,7 +92,7 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
     }
 
     const results: ApiResults = Object.keys(endpoints).reduce((obj, key) => {
-      obj[key] = props.store.get(endpoints[key]);
+      obj[key] = props.store.get(endpoints[key], props.queries[key]);
       return obj;
     }, {});
 
@@ -116,7 +116,10 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
       if (change.newValue[id] !== change.oldValue[id]) {
         results[key] = change.newValue[id]
           ? { ...change.newValue[id] }
-          : this.props.store.get(this.state.endpoints[key]);
+          : this.props.store.get(
+            this.state.endpoints[key],
+            this.props.queries[key]
+          );
         update = true;
       }
     });

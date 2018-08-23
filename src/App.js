@@ -92,29 +92,30 @@ class App extends React.Component<*, AppState> {
             per_page: this.state.perPage,
             page: this.state.page
           }],
-          user: ['user.getSingle', { id: 24 }]
+          user: ['user.getSingle', { id: 1 }]
         }}>
           {({ users, user }, loading) => <div className='container'>
             {this.renderHeader(loading)}
 
             <div className='row'>
               <div className='col col-sm-6'>
-                <Pre value={users} loading={users.loading} />
-                <Pre value={user} loading={users.loading} />
+                <Pre value={users.data} loading={users.loading} />
+                <Pre value={user.data} loading={users.loading} />
               </div>
               <div className='col col-sm-6'>
                 {loading || ! users.data
                   ? 'Loading...'
-                  : <ApiSerialQuery
-                    queries={users.data.list.map(it => (['user.getSingle', { id: it.id }]))}
-                    mergeResolver={App.mergeUserDetails}
-                  >
-                    {result => loading ? 'loading...' : <Pre value={result} loading={result.loading} />}
-                  </ApiSerialQuery>}
+                  : <React.Fragment>
+                      <ApiSerialQuery
+                      queries={users.data.list.map(it => (['user.getSingle', { id: it.id }]))}
+                      mergeResolver={App.mergeUserDetails}
+                    >
+                      {result => loading ? 'loading...' : <Pre value={result.data} loading={result.loading} />}
+                    </ApiSerialQuery>
+
+                    {users.data && <ExampleForm user={users.data.list[0]} />}
+                  </React.Fragment>}
               </div>
-              {users.data && <div className='col col-sm-6'>
-                <ExampleForm user={users.data.list[0]} />
-              </div>}
             </div>
 
           </div>}

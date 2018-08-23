@@ -10,7 +10,7 @@ import type { MutationProps } from './Mutation';
 // -----------------------------------------------------------------------------
 
 export type ApiMutationProps = {|
-  onSuccess?: $ElementType<MutationProps, 'onSuccess'>,
+  update?: $ElementType<MutationProps, 'update'>,
   children: $ElementType<MutationProps, 'children'>,
   query: $ElementType<MutationProps, 'query'>
 |};
