@@ -19,6 +19,8 @@ export type ExampleFormProps = {|
 
 export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
 
+  formRef = React.createRef();
+
   // ---------------------------------------------------------------------------
 
   submitForm = (action: ApiAction) => (e: SyntheticEvent<HTMLFormElement>): void => {
@@ -47,9 +49,14 @@ export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
             if (index > -1) {
               // $FlowFixMe
               query.data.list[index].fullName = result.data.name;
+              // $FlowFixMe
+              query.data.list[index] = {...query.data.list[index]};
+              // $FlowFixMe
+              query.data.list = [...query.data.list];
+              query.data = { ...query.data };
               return {
                 ...(prev || {}),
-                [it]: { ...query, data: { ...query.data } }
+                [it]: { ...query }
               }
             }
           }
@@ -70,10 +77,10 @@ export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
           // $FlowFixMe
           if (query && query.data && query.data.data && query.data.data.id === result.data.id) {
             query.data.data.first_name = first_name;
-            query.data.data.last_name = last_name
+            query.data.data.last_name = last_name;
             return {
               ...(prev || {}),
-              [it]: { ...query, data: { ...query.data } }
+              [it]: { ...query, data: { ...query.data, list: [...(query.data.list || [])] } }
             }
           }
           return prev;
@@ -84,17 +91,30 @@ export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
     return null;
   };
 
+  // ---------------------------------------------------------------------------
+
+  handleChange = (action: ApiAction) => (e: any): void => {
+    action && action({
+      // $FlowFixMe
+      name: e.currentTarget.value,
+      id: this.props.user.id
+    });
+  };
+
+  // ---------------------------------------------------------------------------
+
   render (): React.Node {
 
     const { user } = this.props;
 
     return <ApiMutation query={'user.putUsername'} update={this.update}>
-      {(action, result) => <form onSubmit={this.submitForm(action)}>
+      {(action, result) => <form ref={this.formRef} onSubmit={this.submitForm(action)}>
         <div className='input-group mb-3'>
           <input
-            defaultValue={user.fullName}
+            onChange={this.handleChange(action)}
             className='form-control'
             placeholder='Username'
+            value={user.fullName}
             name='name' />
           <div className='input-group-append'>
             <button type='submit' className='btn btn-outline-secondary'>Update !</button>

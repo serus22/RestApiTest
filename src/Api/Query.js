@@ -160,10 +160,10 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
   componentDidUpdate (prevProps: QueryProps, prevState: QueryState): void {
     // if (this.state.loading !== prevState.loading) {
-      this.props.onUpdate && this.props.onUpdate(
-        this.state.results,
-        this.state.loading
-      );
+    this.props.onUpdate && this.props.onUpdate(
+      this.state.results,
+      this.state.loading
+    );
     // }
   }
 }

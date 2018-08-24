@@ -9,7 +9,7 @@ export default (context?: {}) => (
   const { method, headers, url, options } = endpoint;
 
   return fetch(url, { method, headers, ...options })
-    .then(res =>  {
+    .then(res => {
       if (res.ok) {
         return res.json()
           .then(res => ({
@@ -24,4 +24,4 @@ export default (context?: {}) => (
     .catch(error => ({
       error: error.message || error.code || error
     }));
-}
+};

@@ -13,14 +13,14 @@ export type SerialQueryProps = {|
   endpoints: { [string]: any => Endpoint },
   mergeResolver: (?any, ?any) => any,
   children: ApiResult => React.Node,
-  queries: Array<QueryDefinition>,
+  queries: Array<QueryDefinition>, // eslint-disable-line
   onUpdate?: ApiResult => void,
   store: ApiStore
 |};
 
 type SerialQueryState = {|
   queries: { [string]: QueryDefinition },
-  stack: Array<QueryDefinition>,
+  stack: Array<QueryDefinition>, // eslint-disable-line
   index: number
 |};
 
@@ -43,7 +43,6 @@ export default class SerialQuery extends React.PureComponent<
     props: SerialQueryProps,
     state: SerialQueryState
   ): null | $Shape<SerialQueryState> {
-
 
     if (props.queries !== state.stack) {
       let index = SerialQuery.findFirstUnresolved(props);
@@ -104,7 +103,7 @@ export default class SerialQuery extends React.PureComponent<
         return this.props.mergeResolver(prev, results[key].data);
       }
       return prev;
-    }, this.props.mergeResolver(null, results[first].data))
+    }, this.props.mergeResolver(null, results[first].data));
   };
 
   // ---------------------------------------------------------------------------
@@ -123,8 +122,8 @@ export default class SerialQuery extends React.PureComponent<
           index: i,
           queries: this.props.queries
             .slice(0, i + 1)
-            .reduce((prev, it, key) => ({ ...prev, [key]: it }), {}),
-          }, resolve);
+            .reduce((prev, it, key) => ({ ...prev, [key]: it }), {})
+        }, resolve);
       } else {
         resolve();
       }
@@ -132,11 +131,11 @@ export default class SerialQuery extends React.PureComponent<
 
     update.then(_ => {
       onUpdate && onUpdate({
-        loading: loading || index < stack.length -1,
+        loading: loading || index < stack.length - 1,
         data: this.mergeResults(results),
         query: ['SerialQuery', null]
       });
-    })
+    });
   };
 
   // ---------------------------------------------------------------------------

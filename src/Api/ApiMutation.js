@@ -25,7 +25,7 @@ export default class ApiMutation extends React.PureComponent<ApiMutationProps> {
         endpoints={endpoints}
         store={store}
         {...this.props} />}
-      </Consumer>;
-    }
+    </Consumer>;
+  }
 }
 

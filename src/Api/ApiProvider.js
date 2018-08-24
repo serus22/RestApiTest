@@ -19,7 +19,7 @@ export type ApiContext = {|
 const defaultApiContext = {
   store: new MobxApiStore(defaultFetch({})),
   endpoints: {}
-}
+};
 
 // -----------------------------------------------------------------------------
 

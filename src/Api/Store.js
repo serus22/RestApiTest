@@ -24,8 +24,11 @@ export type RequestResult = {
 export type Endpoint = {
   headers?: { [string]: string },
   options?: { [string]: string },
-  decorator: (any, any) => any,
-  method: string,
+  decorator?: (any, any) => any,
+  params?: { [string]: any },
+  props?: { [string]: any },
+  body?: { [string]: any },
+  method?: string,
   uid?: string,
   url: string
 }
@@ -109,12 +112,12 @@ class ApiStore {
 
   // ---------------------------------------------------------------------------
 
-  getCached(endpoint): null | ApiResult {
+  getCached (endpoint): null | ApiResult {
     const id = this.getId(endpoint);
     return this.getCachedById(id);
   }
 
-  getCachedById(id: string): null | ApiResult {
+  getCachedById (id: string): null | ApiResult {
     return this.cache[id] || null; // TODO: invalidate by TTL
   }
 
@@ -126,7 +129,7 @@ class ApiStore {
 
   // ---------------------------------------------------------------------------
 
-  searchQuery(queryName: string): ApiCache | null {
+  searchQuery (queryName: string): ApiCache | null {
     return ((this.queryGroups && this.queryGroups[queryName]) || []).reduce((prev, it) => {
       const val = this.getCachedById(it);
       if (val) {
