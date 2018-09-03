@@ -9,7 +9,7 @@ import type { ApiAction, ApiResult, ApiCache } from './Api';
 // -----------------------------------------------------------------------------
 
 export type ExampleFormProps = {|
-  user: {
+  user: ?{
     fullName: string,
     id: string
   }
@@ -94,7 +94,7 @@ export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
   // ---------------------------------------------------------------------------
 
   handleChange = (action: ApiAction) => (e: any): void => {
-    action && action({
+    this.props.user && action && action({
       // $FlowFixMe
       name: e.currentTarget.value,
       id: this.props.user.id
@@ -114,7 +114,7 @@ export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
             onChange={this.handleChange(action)}
             className='form-control'
             placeholder='Username'
-            value={user.fullName}
+            value={user && user.fullName}
             name='name' />
           <div className='input-group-append'>
             <button type='submit' className='btn btn-outline-secondary'>Update !</button>

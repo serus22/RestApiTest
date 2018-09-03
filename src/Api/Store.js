@@ -1,7 +1,10 @@
 // @flow
 
-import { observable, action, decorate } from 'mobx';
+// import { observable, action, decorate } from 'mobx';
 
+import pubsub from './pubsub';
+
+import type { WithPubSub } from './pubsub';
 import type { QueryDefinition } from './index';
 
 // -----------------------------------------------------------------------------
@@ -45,10 +48,11 @@ class ApiStore {
 
   fetchAction: Endpoint => Promise<RequestResult>;
   queryGroups: ApiCacheGroups = {};
-  cache: ApiCache = {};
+  cache: WithPubSub<ApiCache>;
 
   constructor (fetchAction: Endpoint => Promise<RequestResult>): void {
     this.fetchAction = fetchAction;
+    this.cache = pubsub({});
   }
 
   // ---------------------------------------------------------------------------
@@ -94,6 +98,7 @@ class ApiStore {
               loading: false
             }
           };
+          this.cache.publish('cache', this.cache);
         })
         .catch(error => {
           this.cache = { ...this.cache,
@@ -104,6 +109,7 @@ class ApiStore {
               ttl: 0
             }
           };
+          this.cache.publish('cache', this.cache);
         });
     }, 1);
 
@@ -112,7 +118,7 @@ class ApiStore {
 
   // ---------------------------------------------------------------------------
 
-  getCached (endpoint): null | ApiResult {
+  getCached (endpoint: any): null | ApiResult {
     const id = this.getId(endpoint);
     return this.getCachedById(id);
   }
@@ -125,6 +131,16 @@ class ApiStore {
 
   update = (update: ApiCache): void => {
     this.cache = { ...this.cache, ...update };
+    this.cache.publish('cache', this.cache);
+  }
+
+  subscribe = (listener: any => void): string => {
+    // $FlowFixMe
+    return this.cache.subscribe('cache', listener);
+  }
+
+  unsubscribe = (token: string): boolean => {
+    return this.cache.unsubscribe(token);
   }
 
   // ---------------------------------------------------------------------------
@@ -140,10 +156,4 @@ class ApiStore {
   };
 }
 
-const MobxApiStore = decorate(ApiStore, {
-  cache: observable,
-  update: action,
-  get: action
-});
-
-export default MobxApiStore;
+export default ApiStore;

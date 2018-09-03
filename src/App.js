@@ -92,7 +92,7 @@ class App extends React.Component<*, AppState> {
             per_page: this.state.perPage,
             page: this.state.page
           }],
-          user: ['user.getSingle', { id: 1 }]
+          user: ['user.getSingle', { id: ((this.state.page - 1) * this.state.perPage) + 1 }]
         }}>
           {({ users, user }, loading) => <div className='container'>
             {this.renderHeader(loading)}
@@ -100,7 +100,7 @@ class App extends React.Component<*, AppState> {
             <div className='row'>
               <div className='col col-sm-6'>
                 <Pre value={users.data} loading={users.loading} />
-                <Pre value={user.data} loading={users.loading} />
+                <Pre value={user.data} loading={user.loading} />
               </div>
               <div className='col col-sm-6'>
                 {loading || ! users.data

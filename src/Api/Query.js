@@ -1,7 +1,6 @@
 // @flow
 
 import * as React from 'react';
-import { observe } from 'mobx';
 
 import ApiStore from './Store';
 import type { ApiResult, Endpoint } from './index';
@@ -39,7 +38,7 @@ const InitialState: QueryState = {
 export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
   mounted: boolean;
-  disposer: any;
+  disposer: string;
 
   // ---------------------------------------------------------------------------
 
@@ -77,8 +76,9 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
       const query = template(props.queries[key][1]);
 
+      // TODO: use ID instead url for example because of POST, PATCH could have same url
       if (! prevState.endpoints[key]
-        || (prevState.endpoints[key] && prevState.endpoints[key].url !== query.url)) { // TODO: use ID instead url for example because of POST, PATCH could have same url
+        || (prevState.endpoints[key] && prevState.endpoints[key].url !== query.url)) {
         obj[key] = query;
         update = true;
       } else {
@@ -112,14 +112,9 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
     let update = false;
 
     Object.keys(this.state.endpoints).forEach(key => {
-      const id = this.state.endpoints[key].url;
-      if (change.newValue[id] !== change.oldValue[id]) {
-        results[key] = change.newValue[id]
-          ? { ...change.newValue[id] }
-          : this.props.store.get(
-            this.state.endpoints[key],
-            this.props.queries[key]
-          );
+      const val = this.props.store.getCached(this.state.endpoints[key]);
+      if (val !== this.state.endpoints[key]) {
+        results[key] = val;
         update = true;
       }
     });
@@ -134,13 +129,13 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
   componentDidMount (): void {
     this.mounted = true;
-    this.disposer = observe(this.props.store, 'cache', this.listener);
+    this.disposer = this.props.store.subscribe(this.listener);
   }
 
   // ---------------------------------------------------------------------------
 
   componentWillUnmount (): void {
-    this.disposer();
+    this.props.store.unsubscribe(this.disposer);
     this.mounted = false;
   }
 
