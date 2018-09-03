@@ -26,7 +26,7 @@ export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
   submitForm = (action: ApiAction) => (e: SyntheticEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    action && action({
+    this.props.user && action && action({
       // $FlowFixMe
       name: e.currentTarget.name.value,
       id: this.props.user.id

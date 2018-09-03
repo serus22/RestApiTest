@@ -1,9 +1,11 @@
 // @flow
 
-import type { Endpoint, RequestResult } from '../Store';
+import type { Query } from '../index'
+import type { Endpoint } from './endpoints';
+import type { RequestResult } from '../index';
 
 export default (context?: {}) => (
-  endpoint: Endpoint
+  endpoint: Endpoint & Query
 ): Promise<RequestResult> => {
 
   const { method, headers, url, options } = endpoint;

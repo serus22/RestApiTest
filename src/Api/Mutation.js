@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import MobxApiStore from './Store';
 
-import type { Endpoint, ApiResult, ApiCache } from './index';
+import type { Query, ApiResult, ApiCache } from './index';
 
 // -----------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ export type ApiAction = (props: any) => Promise<ApiResult>;
 export type MutationProps = {|
   update?: (ApiResult, storeApi: { searchQuery: string => null | ApiCache }) => null | ApiCache,
   children: (ApiAction, null | ApiResult) => React.Node,
-  endpoints: { [string]: any => Endpoint },
+  endpoints: { [string]: any => Query },
   store: MobxApiStore,
   query: string
 |};

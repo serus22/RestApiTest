@@ -4,7 +4,7 @@ import * as React from 'react';
 import { observe } from 'mobx';
 
 import ApiStore from './Store';
-import type { ApiResult, Endpoint } from './index';
+import type { ApiResult, Query as QueryType } from './index';
 
 // -----------------------------------------------------------------------------
 
@@ -15,17 +15,17 @@ export type ApiResults = {
 };
 
 type QueryState = {|
-  endpoints: { [string]: any => Endpoint },
+  endpoints: { [string]: QueryType }, // generated queries
   results: ApiResults,
   loading: boolean
 |};
 
 export type QueryProps = {|
-  children: (ApiResults, boolean) => React.Node,
-  onUpdate?: (ApiResults, boolean) => void,
-  queries: { [string]: QueryDefinition },
-  endpoints: { [string]: any => Endpoint },
-  store: ApiStore
+  children?: (ApiResults, boolean) => React.Node, // render props
+  onUpdate?: (ApiResults, boolean) => void, // action handler
+  queries: { [string]: QueryDefinition }, // original props
+  endpoints: { [string]: any => QueryType }, // global definition
+  store: ApiStore // data storage
 |};
 
 const InitialState: QueryState = {
@@ -47,7 +47,7 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
     super(props);
 
     if (! props.store) {
-      throw new Error('Migging store instance');
+      throw new Error('Missing store instance');
     }
 
     if (! props.endpoints) {
@@ -78,7 +78,8 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
       const query = template(props.queries[key][1]);
 
       if (! prevState.endpoints[key]
-        || (prevState.endpoints[key] && prevState.endpoints[key].url !== query.url)) { // TODO: use ID instead url for example because of POST, PATCH could have same url
+        || (prevState.endpoints[key]
+          && prevState.endpoints[key].uid !== query.uid)) {
         obj[key] = query;
         update = true;
       } else {
@@ -112,14 +113,11 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
     let update = false;
 
     Object.keys(this.state.endpoints).forEach(key => {
-      const id = this.state.endpoints[key].url;
-      if (change.newValue[id] !== change.oldValue[id]) {
+      const id = this.state.endpoints[key].uid;
+      if (results[key] !== change.newValue[id]) {
         results[key] = change.newValue[id]
-          ? { ...change.newValue[id] }
-          : this.props.store.get(
-            this.state.endpoints[key],
-            this.props.queries[key]
-          );
+          ? change.newValue[id]
+          : this.props.store.get(this.state.endpoints[key]);
         update = true;
       }
     });
@@ -150,10 +148,9 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
 
     const { results, loading } = this.state;
 
-    return this.props.children(
-      results,
-      loading
-    );
+    return this.props.children
+      ? this.props.children(results, loading)
+      : null;
   }
 
   // ---------------------------------------------------------------------------

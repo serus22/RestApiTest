@@ -15,6 +15,6 @@ export {
 
 export type { ApiAction } from './Mutation';
 export type { ApiResults, QueryDefinition } from './Query';
-export type { ApiResult, Endpoint, ApiCache } from './Store';
+export type { ApiResult, Query, ApiCache, RequestResult } from './Store';
 
 export default ApiProvider;

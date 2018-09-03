@@ -19,19 +19,12 @@ export type RequestResult = {
   data?: any
 };
 
-// -----------------------------------------------------------------------------
+export type Query = {
+  ttl?: number, // minutes
+  uid: string
+};
 
-export type Endpoint = {
-  headers?: { [string]: string },
-  options?: { [string]: string },
-  decorator?: (any, any) => any,
-  params?: { [string]: any },
-  props?: { [string]: any },
-  body?: { [string]: any },
-  method?: string,
-  uid?: string,
-  url: string
-}
+// -----------------------------------------------------------------------------
 
 export type ApiCacheGroups = { [string]: Array<string> };
 
@@ -43,11 +36,11 @@ export type ApiCache = {
 
 class ApiStore {
 
-  fetchAction: Endpoint => Promise<RequestResult>;
+  fetchAction: Query => Promise<RequestResult>;
   queryGroups: ApiCacheGroups = {};
   cache: ApiCache = {};
 
-  constructor (fetchAction: Endpoint => Promise<RequestResult>): void {
+  constructor (fetchAction: Query => Promise<RequestResult>): void {
     this.fetchAction = fetchAction;
   }
 
@@ -112,7 +105,7 @@ class ApiStore {
 
   // ---------------------------------------------------------------------------
 
-  getCached (endpoint): null | ApiResult {
+  getCached (endpoint: Query): null | ApiResult {
     const id = this.getId(endpoint);
     return this.getCachedById(id);
   }

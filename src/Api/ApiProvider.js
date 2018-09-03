@@ -5,9 +5,9 @@ import * as React from 'react';
 import MobxApiStore from './Store';
 import defaultFetch from './examples/defaultFetch';
 
-import type { Endpoint } from './Store';
+import type { Query as QueryType } from './Store';
 
-export type Endpoints = { [string]: Endpoint | Endpoints };
+export type Endpoints = { [string]: QueryType | Endpoints };
 
 // -----------------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ export type ApiContext = {|
 |};
 
 const defaultApiContext = {
+  // $FlowFixMe
   store: new MobxApiStore(defaultFetch({})),
   endpoints: {}
 };

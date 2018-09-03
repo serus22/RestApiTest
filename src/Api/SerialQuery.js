@@ -5,14 +5,19 @@ import * as React from 'react';
 import Query from './Query';
 import ApiStore from './Store';
 
-import type { QueryDefinition, ApiResult, Endpoint, ApiResults } from './index';
+import type {
+  Query as QueryType,
+  QueryDefinition,
+  ApiResults,
+  ApiResult
+} from './index';
 
 // -----------------------------------------------------------------------------
 
 export type SerialQueryProps = {|
-  endpoints: { [string]: any => Endpoint },
+  endpoints: { [string]: any => QueryType },
   mergeResolver: (?any, ?any) => any,
-  children: ApiResult => React.Node,
+  children?: ApiResult => React.Node,
   queries: Array<QueryDefinition>, // eslint-disable-line
   onUpdate?: ApiResult => void,
   store: ApiStore
@@ -152,11 +157,13 @@ export default class SerialQuery extends React.PureComponent<
       store={store}
     >
       {(results, loading) => {
-        return children({
-          loading: loading || index < stack.length - 1,
-          data: this.mergeResults(results),
-          query: ['SerialQuery', null]
-        });
+        return children
+          ? children({
+            loading: loading || index < stack.length - 1,
+            data: this.mergeResults(results),
+            query: ['SerialQuery', null]
+          })
+          : null;
       }}
     </Query>;
   }
