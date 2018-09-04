@@ -10,7 +10,7 @@ import type { ApiResults, QueryDefinition } from './index';
 // -----------------------------------------------------------------------------
 
 type ApiQueryProps = {|
-  children: (ApiResults, boolean) => React.Node,
+  children?: (ApiResults, boolean) => React.Node,
   onUpdate?: (ApiResults, boolean) => void,
   queries: { [string]: QueryDefinition }
 |};

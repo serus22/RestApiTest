@@ -1,6 +1,6 @@
 // @flow
 
-import type { Query } from '../index'
+import type { Query } from '../index';
 import type { Endpoint } from './endpoints';
 import type { RequestResult } from '../index';
 

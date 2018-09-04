@@ -1,5 +1,6 @@
 // @flow
 
+import Store from './Store';
 import ApiQuery from './ApiQuery';
 import ApiMutation from './ApiMutation';
 import ApiSerialQuery from './ApiSerialQuery';
@@ -10,7 +11,8 @@ export {
   ApiSerialQuery,
   ApiProvider,
   ApiMutation,
-  ApiQuery
+  ApiQuery,
+  Store
 };
 
 export type { ApiAction } from './Mutation';

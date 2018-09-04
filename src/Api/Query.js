@@ -23,7 +23,7 @@ type QueryState = {|
 export type QueryProps = {|
   children?: (ApiResults, boolean) => React.Node, // render props
   onUpdate?: (ApiResults, boolean) => void, // action handler
-  queries: { [string]: QueryDefinition }, // original props
+  queries: { [string]: QueryDefinition }, // eslint-disable-line
   endpoints: { [string]: any => QueryType }, // global definition
   store: ApiStore // data storage
 |};
@@ -117,7 +117,10 @@ export default class Query extends React.PureComponent<QueryProps, QueryState> {
       if (results[key] !== change.newValue[id]) {
         results[key] = change.newValue[id]
           ? change.newValue[id]
-          : this.props.store.get(this.state.endpoints[key]);
+          : this.props.store.get(
+            this.state.endpoints[key],
+            this.props.queries[key]
+          );
         update = true;
       }
     });

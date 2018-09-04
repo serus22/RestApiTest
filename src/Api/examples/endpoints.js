@@ -6,7 +6,6 @@ import type { Query } from '../index';
 
 // -----------------------------------------------------------------------------
 
-
 const API = 'https://reqres.in/api';
 
 // -----------------------------------------------------------------------------
@@ -29,7 +28,7 @@ function createHash (str: string): string {
   let hash = 5381;
   let i = str.length;
 
-  while(i) {
+  while (i) {
     hash = (hash * 33) ^ str.charCodeAt(--i);
   }
 

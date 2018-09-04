@@ -6,13 +6,13 @@ import type { QueryDefinition } from './index';
 
 // -----------------------------------------------------------------------------
 
-export type ApiResult = {|
-  query: QueryDefinition,
+export type ApiResult = {
+  query?: QueryDefinition,
   loading: boolean,
   ttl?: number,
   error?: any,
   data?: any
-|};
+};
 
 export type RequestResult = {
   error?: any,
