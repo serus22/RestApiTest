@@ -2,30 +2,30 @@
 
 import * as React from 'react';
 
-import Query from './Query';
+import Mutation from './Mutation';
 import { Consumer } from './ApiProvider';
 
-import type { ApiResults, QueryDefinition } from './index';
+import type { MutationProps } from './Mutation';
 
 // -----------------------------------------------------------------------------
 
-export type ApiQueryProps = $Exact<{
-  children?: (ApiResults, boolean) => React.Node,
-  onUpdate?: (ApiResults, boolean) => void,
-  queries: { [string]: QueryDefinition },
-  id?: string
-}>;
+export type ApiMutationProps = {|
+  update?: $ElementType<MutationProps, 'update'>,
+  children: $ElementType<MutationProps, 'children'>,
+  query: $ElementType<MutationProps, 'query'>
+|};
 
 // -----------------------------------------------------------------------------
 
-export default class ApiQuery extends React.PureComponent<ApiQueryProps> {
+export default class ApiMutation extends React.PureComponent<ApiMutationProps> {
 
   render (): React.Node {
     return <Consumer>
-      {({ store, endpoints }) => <Query
+      {({ store, endpoints }) => <Mutation
         endpoints={endpoints}
         store={store}
         {...this.props} />}
     </Consumer>;
   }
 }
+
