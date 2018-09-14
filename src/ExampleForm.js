@@ -67,7 +67,7 @@ export default class ExampleForm extends React.PureComponent<ExampleFormProps> {
       const match2 = storeApi.searchQuery('user.getSingle');
 
       // $FlowFixMe
-      let first_name = result.data.name.split(' ');
+      let first_name = (result.data && result.data.name && result.data.name.split(' ')) || '';
       let last_name = first_name.splice(1).join(' ');
       first_name = first_name.splice(0, 1).join(' ');
 
