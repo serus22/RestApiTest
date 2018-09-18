@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import Query from './Query';
+// import Query from './Query';
 import ApiStore from './Store';
 
 import type {
@@ -151,7 +151,7 @@ export default class SerialQuery extends React.PureComponent<
     const { stack, index, queries } = this.state;
     const { children, store, endpoints } = this.props;
 
-    return <Query
+    return null; /* <Query
       onUpdate={this.onUpdate}
       endpoints={endpoints}
       queries={queries}
@@ -166,6 +166,6 @@ export default class SerialQuery extends React.PureComponent<
           })
           : null;
       }}
-    </Query>;
+    </Query>; */
   }
 }

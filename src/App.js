@@ -108,12 +108,12 @@ class App extends React.Component<*, AppState> {
                 {loading || ! users.data
                   ? 'Loading...'
                   : <React.Fragment>
-                      <ApiSerialQuery
+                      { /* <ApiSerialQuery
                       queries={users.data.list.map(it => (['user.getSingle', { id: it.id }]))}
                       mergeResolver={App.mergeUserDetails}
                     >
                       {result => loading ? 'loading...' : <Pre value={result.data} loading={result.loading} />}
-                    </ApiSerialQuery>
+                    </ApiSerialQuery> */}
 
                     {users.data && <ExampleForm user={users.data.list[0]} />}
                   </React.Fragment>}

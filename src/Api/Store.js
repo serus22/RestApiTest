@@ -2,12 +2,9 @@
 
 import { observable, action, decorate } from 'mobx';
 
-import type { QueryDefinition } from './index';
-
 // -----------------------------------------------------------------------------
 
 export type ApiResult = {
-  query?: QueryDefinition,
   loading: boolean,
   ttl?: number,
   error?: any,
@@ -19,11 +16,6 @@ export type RequestResult = {
   data?: any
 };
 
-export type Query = {
-  ttl?: number, // minutes
-  uid: string
-};
-
 // -----------------------------------------------------------------------------
 
 export type ApiCacheGroups = { [string]: Array<string> };
@@ -32,29 +24,29 @@ export type ApiCache = {
   [string]: ApiResult
 };
 
+export type FetchAction = (name: string,  props: any) => Promise<RequestResult>;
+
 // -----------------------------------------------------------------------------
 
 class ApiStore {
 
-  fetchAction: Query => Promise<RequestResult>;
   queryGroups: ApiCacheGroups = {};
+  fetchAction: FetchAction;
   cache: ApiCache = {};
 
-  constructor (fetchAction: Query => Promise<RequestResult>): void {
+  constructor (fetchAction: FetchAction): void {
     this.fetchAction = fetchAction;
   }
 
   // // ------------------------------------------------------------------------
 
-  getId (endpoint: any): string {
-    return endpoint.uid || endpoint.url || Math.random().toString();
-  }
+  get = (q: any): Promise<ApiResult> => {
 
-  // // ------------------------------------------------------------------------
+    const { name, props, id} = q;
 
-  get = (endpoint: any, query?: QueryDefinition): Promise<ApiResult> => {
-    const id = this.getId(endpoint);
-    return this.fetchAction(endpoint)
+
+
+    return this.fetchAction(name, props)
       .then(res => {
         const result = {};
 
@@ -64,13 +56,6 @@ class ApiStore {
         if (res.data) {
           result.data = res.data;
         }
-
-        result.loading = false;
-        result.ttl = endpoint.ttl !== 0
-          ? Date.now() + (endpoint.ttl || 60) * 60 * 1000
-          : 0;
-
-        result.query = query;
         return result;
       })
       .catch(error => ({
@@ -79,12 +64,6 @@ class ApiStore {
         ttl: 0
       }))
       .then(res => {
-        if (res.ttl && query) {
-          if (! this.queryGroups[query[0]]) {
-            this.queryGroups[query[0]] = [];
-          }
-          this.queryGroups[query[0]].push(id);
-        }
         this.cache = {
           ...this.cache,
           [id]: res
@@ -95,40 +74,15 @@ class ApiStore {
 
   // // ------------------------------------------------------------------------
 
-  getCachedById (id: string): null | ApiResult {
+  __getCached (id: string): null | ApiResult {
     const cached = this.cache[id];
     // return cached
     if (cached &&
-      (cached.loading || cached.ttl === 0 || (cached.ttl || 0) > Date.now())) {
+      (! cached.ttl || (cached.ttl || 0) > Date.now())) {
       return cached;
     }
     return null;
   }
-
-  // // ------------------------------------------------------------------------
-
-  update = (update: ApiCache): void => {
-    this.cache = { ...this.cache, ...update };
-  }
-
-  // // ------------------------------------------------------------------------
-
-  searchQuery (queryName: string): ApiCache | null {
-    return ((this.queryGroups && this.queryGroups[queryName]) || [])
-      .reduce((prev, it) => {
-        const val = this.getCachedById(it);
-        if (val) {
-          return { ...(prev || {}), [it]: this.getCachedById(it) };
-        }
-        return prev;
-      }, null);
-  };
 }
 
-const MobxApiStore = decorate(ApiStore, {
-  cache: observable,
-  update: action,
-  get: action
-});
-
-export default MobxApiStore;
+export default ApiStore;
